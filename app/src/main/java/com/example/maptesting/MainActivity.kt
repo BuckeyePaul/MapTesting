@@ -3,6 +3,7 @@ package com.example.maptesting
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -91,6 +92,7 @@ private val locationObserver = object : LocationObserver {
         if (currentSpeed > speedingLimit) {
             //Add time between checks of speed to speeding timer
             timeSpeeding += timeChange
+
         }
 
         //If rounded speed is above previous max speed
@@ -107,6 +109,22 @@ private val locationObserver = object : LocationObserver {
         //Set text view with information for debugging
         textView.text = speedLimitMPH.toString() + "\n" + currentSpeed.toString() + "\n" +
                 (currentTime - locationLastUpdate).toString() + "\n"
+
+        if(speedLimitMPH > 5) {
+            speedLimDisp.text = speedLimitMPH.toString() + " mph"
+        } else {
+            speedLimDisp.text = "Not found"
+        }
+
+        currSpeedDisp.text = currentSpeed.toString() + " mph"
+        if (currentSpeed > speedingLimit) {
+            currSpeedDisp.setTextColor(Color.parseColor("#FF0000"))
+        }
+
+        speedingDisp.text = timeSpeeding.toString()
+        stopDisp.text = hardStops.toString()
+        accelDisp.text = rapidAcc.toString()
+
         //Update last update time to the time most recently recorded
         locationLastUpdate = currentTime
         //Update last speed to the speed most recently recorded
@@ -124,6 +142,21 @@ private lateinit var textView: TextView
 //TextView for acceleration data
 @SuppressLint("StaticFieldLeak")
 private lateinit var accText: TextView
+
+@SuppressLint("StaticFieldLeak")
+private lateinit var speedLimDisp: TextView
+
+@SuppressLint("StaticFieldLeak")
+private lateinit var currSpeedDisp: TextView
+
+@SuppressLint("StaticFieldLeak")
+private lateinit var speedingDisp: TextView
+
+@SuppressLint("StaticFieldLeak")
+private lateinit var stopDisp: TextView
+
+@SuppressLint("StaticFieldLeak")
+private lateinit var accelDisp: TextView
 
 //Sensor Manager and Sensor Event Listener for accelerometer
 private lateinit var sensorManager: SensorManager
@@ -171,6 +204,17 @@ class MainActivity : AppCompatActivity() {
 
         textView = findViewById(R.id.testText)
         accText = findViewById(R.id.accText)
+
+        // Set text color to white to make debugging easy to access by commenting out these lines
+        textView.setTextColor(Color.parseColor("#FFFFFF"))
+        accText.setTextColor(Color.parseColor("#FFFFFF"))
+
+        speedLimDisp = findViewById(R.id.speedLimDisp)
+        currSpeedDisp = findViewById(R.id.currSpeedDisp)
+        speedingDisp = findViewById(R.id.speedingDisp)
+        stopDisp = findViewById(R.id.stopDisp)
+        accelDisp = findViewById(R.id.accelDisp)
+
 
         // initialize Mapbox Navigation
         mapboxNavigation = if (MapboxNavigationProvider.isCreated()) {
