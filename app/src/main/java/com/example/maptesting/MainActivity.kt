@@ -119,6 +119,8 @@ private val locationObserver = object : LocationObserver {
         currSpeedDisp.text = currentSpeed.toString() + " mph"
         if (currentSpeed > speedingLimit) {
             currSpeedDisp.setTextColor(Color.parseColor("#FF0000"))
+        } else {
+            currSpeedDisp.setTextColor(Color.parseColor("#000000"))
         }
 
         speedingDisp.text = timeSpeeding.toString()
