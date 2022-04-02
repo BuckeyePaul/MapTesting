@@ -4,7 +4,15 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/ECE5466/MapTesting/app/src/main/res/layout/activity_main.xml" value="0.5359375" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.4415" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/drawable/ic_baseline_menu_24.xml" value="0.4415" />
         <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/layout/activity_main.xml" value="0.5541666666666667" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/layout/fragment_home_screen.xml" value="0.31354166666666666" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/layout/fragment_reports_screen.xml" value="0.3828571428571429" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/layout/home_screen.xml" value="0.40806159420289856" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/layout/nav_header.xml" value="0.42857142857142855" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/menu/menu.xml" value="0.5255208333333333" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/menu/nav_menu.xml" value="0.5255208333333333" />
       </map>
     </option>
   </component>
