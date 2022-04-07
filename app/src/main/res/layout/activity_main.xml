@@ -11,21 +11,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:layout_constraintVertical_bias="0.093" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/startButton" />
 
     <TextView
         android:id="@+id/accText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/testText" />
+        app:layout_constraintTop_toTopOf="@+id/imageView"
+        app:layout_constraintVertical_bias="0.387" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -62,7 +59,7 @@
         android:id="@+id/speedLimDisp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="Waiting to start"
         app:layout_constraintBottom_toBottomOf="@+id/speedLimLabel"
         app:layout_constraintStart_toEndOf="@+id/speedLimLabel"
         app:layout_constraintTop_toTopOf="@+id/speedLimLabel" />
@@ -71,7 +68,7 @@
         android:id="@+id/currSpeedDisp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="Waiting to start"
         app:layout_constraintBottom_toBottomOf="@+id/currSpeedLabel"
         app:layout_constraintStart_toEndOf="@+id/currSpeedLabel"
         app:layout_constraintTop_toTopOf="@+id/currSpeedLabel" />
@@ -106,7 +103,7 @@
         android:id="@+id/speedingDisp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="Waiting to start"
         app:layout_constraintStart_toEndOf="@+id/speedingLabel"
         app:layout_constraintTop_toTopOf="@+id/speedingLabel" />
 
@@ -114,7 +111,7 @@
         android:id="@+id/stopDisp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="Waiting to start"
         app:layout_constraintStart_toEndOf="@+id/stopLabel"
         app:layout_constraintTop_toTopOf="@+id/stopLabel" />
 
@@ -122,26 +119,66 @@
         android:id="@+id/accelDisp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="Waiting to start"
         app:layout_constraintStart_toEndOf="@+id/accelLabel"
         app:layout_constraintTop_toTopOf="@+id/accelLabel" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
+    <ImageButton
+        android:id="@+id/homeButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:menu="@menu/menu"
-        android:background="#673AB7"
-        app:itemIconTint="#ffff"
-        app:itemTextColor="#ffff"/>
+        android:contentDescription="Home"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accelDisp"
+        app:srcCompat="@drawable/ic_baseline_home_24" />
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"/>
+    <ImageButton
+        android:id="@+id/reportsButton"
+        android:contentDescription="Reports"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="36dp"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toStartOf="@+id/homeButton"
+        app:layout_constraintTop_toTopOf="@+id/homeButton"
+        app:srcCompat="@drawable/ic_baseline_menu_24" />
+
+    <ImageButton
+        android:id="@+id/scoreButton"
+        android:contentDescription="Score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:minHeight="48dp"
+        app:layout_constraintStart_toEndOf="@+id/homeButton"
+        app:layout_constraintTop_toTopOf="@+id/homeButton"
+        app:srcCompat="@drawable/ic_baseline_check_box_24" />
+
+    <ImageButton
+        android:id="@+id/startButton"
+        android:contentDescription="Start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="clickStart"
+        app:layout_constraintBottom_toTopOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@android:drawable/ic_media_play"
+        tools:ignore="DuplicateClickableBoundsCheck" />
+
+    <ImageButton
+        android:id="@+id/stopButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Stop"
+        android:onClick="clickStop"
+        app:layout_constraintBottom_toTopOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@android:drawable/ic_media_pause" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

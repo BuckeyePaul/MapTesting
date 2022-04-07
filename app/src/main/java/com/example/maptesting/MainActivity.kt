@@ -11,7 +11,9 @@ import android.hardware.SensorManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -19,16 +21,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.fragment.app.Fragment
-import com.example.maptesting.fragments.home_screen
-import com.example.maptesting.fragments.reports_screen
-import com.example.maptesting.fragments.score_screen
 import com.mapbox.navigation.base.options.NavigationOptions
 import com.mapbox.navigation.core.MapboxNavigation
 import com.mapbox.navigation.core.MapboxNavigationProvider
 import com.mapbox.navigation.core.trip.session.LocationMatcherResult
 import com.mapbox.navigation.core.trip.session.LocationObserver
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.mapbox.maps.Image
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
@@ -168,6 +167,12 @@ private lateinit var stopDisp: TextView
 @SuppressLint("StaticFieldLeak")
 private lateinit var accelDisp: TextView
 
+private lateinit var homeButton: ImageButton
+private lateinit var reportsButton: ImageButton
+private lateinit var scoreButton: ImageButton
+private lateinit var startButton: ImageButton
+private lateinit var stopButton: ImageButton
+
 //Sensor Manager and Sensor Event Listener for accelerometer
 private lateinit var sensorManager: SensorManager
 private lateinit var sensorEventListener: SensorEventListener
@@ -194,10 +199,7 @@ private var timeSpeeding: Long = 0
 private var maxSpeed: Int = 0
 private var maxSpeedTime: Long = 0
 
-//Variables for nav bar fragments
-private val homeFragment = home_screen()
-private val reportsFragment = reports_screen()
-private val scoreFragment = score_screen()
+private var STATE: Int = 0
 
 class MainActivity : AppCompatActivity() {
 
@@ -216,6 +218,15 @@ class MainActivity : AppCompatActivity() {
                 PackageManager.PERMISSION_GRANTED
             )
         }
+
+        homeButton = findViewById(R.id.homeButton)
+        reportsButton = findViewById(R.id.reportsButton)
+        scoreButton = findViewById(R.id.scoreButton)
+
+        startButton = findViewById(R.id.startButton)
+        stopButton = findViewById(R.id.stopButton)
+        stopButton.visibility = View.GONE
+        stopButton.isEnabled = false
 
         textView = findViewById(R.id.testText)
         accText = findViewById(R.id.accText)
@@ -242,7 +253,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        mapboxNavigation.startTripSession()
+        mapboxNavigation.stopTripSession()
         mapboxNavigation.registerLocationObserver(locationObserver)
 
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
@@ -252,17 +263,6 @@ class MainActivity : AppCompatActivity() {
             sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI)
         }
 
-        val bottom_navigation = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-
-         bottom_navigation.setOnItemSelectedListener { it ->
-            when(it.itemId) {
-                R.id.ic_home -> replaceFragment(homeFragment)
-                R.id.ic_menu -> replaceFragment(reportsFragment)
-                R.id.ic_score -> replaceFragment(scoreFragment)
-
-            }
-            return@setOnItemSelectedListener true
-        }
 
     }
 
@@ -304,12 +304,38 @@ class MainActivity : AppCompatActivity() {
         override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
     }
 
-    private fun replaceFragment(fragment : Fragment){
-        if(fragment != null) {
-            val transaction = supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container, fragment)
-            transaction.commit()
-        }
+    public fun clickStart(view: View) {
+        // Begin recording location updates
+        mapboxNavigation.startTripSession()
+
+        // Change button visibility
+        startButton.visibility = View.GONE
+        startButton.isEnabled = false
+
+        stopButton.visibility = View.VISIBLE
+        stopButton.isEnabled = true
+
+    }
+
+    public fun clickStop(view: View) {
+
+        // Stop recording location updates
+        mapboxNavigation.stopTripSession()
+
+        // Change button visibility
+        stopButton.visibility = View.GONE
+        stopButton.isEnabled = false
+
+        startButton.visibility = View.VISIBLE
+        startButton.isEnabled = true
+
+        // Revert Displays
+//        speedLimDisp.text = "Waiting to start"
+//        currSpeedDisp.text = "Waiting to start"
+//        speedingDisp.text = "Waiting to start"
+//        stopDisp.text = "Waiting to start"
+//        accelDisp.text = "Waiting to start"
+
     }
 
 }
