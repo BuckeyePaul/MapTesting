@@ -11,23 +11,18 @@ import android.hardware.SensorManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import com.mapbox.navigation.base.options.NavigationOptions
 import com.mapbox.navigation.core.MapboxNavigation
 import com.mapbox.navigation.core.MapboxNavigationProvider
 import com.mapbox.navigation.core.trip.session.LocationMatcherResult
 import com.mapbox.navigation.core.trip.session.LocationObserver
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.mapbox.maps.Image
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
@@ -59,7 +54,7 @@ private val locationObserver = object : LocationObserver {
             speedLimitMPH = (speedLimitKPH.times(0.621371)).roundToInt()
         }
         //Get speed that should not be exceeded
-        val speedingLimit = speedLimitMPH * 1.2
+        val speedingLimit = speedLimitMPH + 5
         //Get current speed from GPS
         val currentSpeed = locationMatcherResult.enhancedLocation.speed*2.23694
         //Floor speed to nearest multiple of 5
@@ -73,14 +68,14 @@ private val locationObserver = object : LocationObserver {
 
         //If the accelerometer has spiked with an acceleration above 8 MPH/s
         if (accSpike) {
-            //See if speed has reduced by at least 7 MPH
+            //See if speed has reduced by at least 4 MPH
             //Some leeway given here to reflect fact that location updates are not continuous
-            if (speedChange < -7) {
-                //If speed has reduced by at least 7 MPH then a hard stop has occurred
+            if (speedChange < -4) {
+                //If speed has reduced by at least 4 MPH then a hard stop has occurred
                 hardStops++
-            //Otherwise see if speed has increased by at least 7 MPH
-            } else if (speedChange > 7) {
-                //If speed has increased by at least 7 MPH then a rapid acceleration has occurred
+            //Otherwise see if speed has increased by at least 4 MPH
+            } else if (speedChange > 4) {
+                //If speed has increased by at least 4 MPH then a rapid acceleration has occurred
                 rapidAcc++
             }
             //Set flag for accelerometer spiking to false
@@ -88,7 +83,7 @@ private val locationObserver = object : LocationObserver {
         }
 
         //If calculated Acceleration is less than -8 MPH/s a hard stop has occurred
-        if (calcAcceleration <= -5) {
+        if (calcAcceleration <= -8) {
             hardStops++
         //If calculated acceleration is greater than 8 MPH/s a rapid acceleration has occurred
         } else if (calcAcceleration >= 8) {
@@ -118,12 +113,12 @@ private val locationObserver = object : LocationObserver {
                 (currentTime - locationLastUpdate).toString() + "\n"
 
         if(speedLimitMPH > 5) {
-            speedLimDisp.text = speedLimitMPH.toString() + " mph"
+            speedLimDisp.text = "$speedLimitMPH mph"
         } else {
             speedLimDisp.text = "Not found"
         }
 
-        currSpeedDisp.text = currentSpeed.toString() + " mph"
+        currSpeedDisp.text = "$currentSpeed mph"
         if (currentSpeed > speedingLimit) {
             currSpeedDisp.setTextColor(Color.parseColor("#FF0000"))
         } else {
@@ -166,11 +161,15 @@ private lateinit var stopDisp: TextView
 
 @SuppressLint("StaticFieldLeak")
 private lateinit var accelDisp: TextView
-
+@SuppressLint("StaticFieldLeak")
 private lateinit var homeButton: ImageButton
+@SuppressLint("StaticFieldLeak")
 private lateinit var reportsButton: ImageButton
+@SuppressLint("StaticFieldLeak")
 private lateinit var scoreButton: ImageButton
+@SuppressLint("StaticFieldLeak")
 private lateinit var startButton: ImageButton
+@SuppressLint("StaticFieldLeak")
 private lateinit var stopButton: ImageButton
 
 //Sensor Manager and Sensor Event Listener for accelerometer
@@ -198,8 +197,6 @@ private var timeSpeeding: Long = 0
 //Variables with max speed traveled (in increments of 5 MPH) and time at that speed
 private var maxSpeed: Int = 0
 private var maxSpeedTime: Long = 0
-
-private var STATE: Int = 0
 
 class MainActivity : AppCompatActivity() {
 
@@ -252,16 +249,21 @@ class MainActivity : AppCompatActivity() {
                     .build()
             )
         }
-
+        //stop trip to make sure no false values are recorded
         mapboxNavigation.stopTripSession()
+        // register location observer that tracks location
         mapboxNavigation.registerLocationObserver(locationObserver)
 
+        // Initialize sensor manager and sensor event listener
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         sensorEventListener = eventListener
 
+        //register accelerometer
         sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.also { accelerometer ->
             sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI)
         }
+        //Implement listeners for buttons
+        implementListeners()
 
 
     }
@@ -304,45 +306,52 @@ class MainActivity : AppCompatActivity() {
         override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
     }
 
-    public fun clickStart(view: View) {
-        // Begin recording location updates
-        mapboxNavigation.startTripSession()
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun implementListeners() {
+        startButton.setOnClickListener(View.OnClickListener {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissions(
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    PackageManager.PERMISSION_GRANTED
+                )
+            }
+            // Begin recording location updates
+            mapboxNavigation.startTripSession()
 
-        // Change button visibility
-        startButton.visibility = View.GONE
-        startButton.isEnabled = false
+            // Change button visibility
+            startButton.visibility = View.GONE
+            startButton.isEnabled = false
 
-        stopButton.visibility = View.VISIBLE
-        stopButton.isEnabled = true
+            stopButton.visibility = View.VISIBLE
+            stopButton.isEnabled = true
+        })
 
-        reportsButton.isEnabled = false
-        scoreButton.isEnabled = false
+        stopButton.setOnClickListener(View.OnClickListener {
+            // Stop recording location updates
+            mapboxNavigation.stopTripSession()
 
+            // Change button visibility
+            stopButton.visibility = View.GONE
+            stopButton.isEnabled = false
 
-    }
+            startButton.visibility = View.VISIBLE
+            startButton.isEnabled = true
 
-    public fun clickStop(view: View) {
-
-        // Stop recording location updates
-        mapboxNavigation.stopTripSession()
-
-        // Change button visibility
-        stopButton.visibility = View.GONE
-        stopButton.isEnabled = false
-
-        startButton.visibility = View.VISIBLE
-        startButton.isEnabled = true
-
-        reportsButton.isEnabled = true
-        scoreButton.isEnabled = true
-
-        // Revert Displays
+            // Revert Displays
 //        speedLimDisp.text = "Waiting to start"
 //        currSpeedDisp.text = "Waiting to start"
 //        speedingDisp.text = "Waiting to start"
 //        stopDisp.text = "Waiting to start"
 //        accelDisp.text = "Waiting to start"
 
+        })
     }
 
 }
