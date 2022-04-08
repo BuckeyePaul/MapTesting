@@ -318,6 +318,7 @@ class MainActivity : AppCompatActivity() {
         reportsButton.isEnabled = false
         scoreButton.isEnabled = false
 
+
     }
 
     public fun clickStop(view: View) {
