@@ -331,6 +331,9 @@ class MainActivity : AppCompatActivity() {
 
             stopButton.visibility = View.VISIBLE
             stopButton.isEnabled = true
+
+            reportsButton.isEnabled = false
+            scoreButton.isEnabled = false
         })
 
         stopButton.setOnClickListener(View.OnClickListener {
@@ -343,6 +346,9 @@ class MainActivity : AppCompatActivity() {
 
             startButton.visibility = View.VISIBLE
             startButton.isEnabled = true
+
+            reportsButton.isEnabled = true
+            reportsButton.isEnabled = true
 
             // Revert Displays
 //        speedLimDisp.text = "Waiting to start"
