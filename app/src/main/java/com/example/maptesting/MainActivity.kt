@@ -25,6 +25,7 @@ import com.mapbox.navigation.core.trip.session.LocationMatcherResult
 import com.mapbox.navigation.core.trip.session.LocationObserver
 import kotlin.math.floor
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 /**
  * Mapbox Navigation entry point. There should only be one instance of this object for the app.
@@ -53,8 +54,13 @@ private val locationObserver = object : LocationObserver {
             //Convert speed limit to MPH if possible
             speedLimitMPH = (speedLimitKPH.times(0.621371)).roundToInt()
         }
-        //Get speed that should not be exceeded
-        val speedingLimit = speedLimitMPH + 5
+        //set default speeding limit to 30 mph
+        var speedingLimit = 30
+        //Get speed that should not be exceeded if there exists a speed limit
+        if (speedLimitMPH != 0) {
+            speedingLimit = speedLimitMPH + 5
+        }
+
         //Get current speed from GPS
         val currentSpeed = locationMatcherResult.enhancedLocation.speed*2.23694
         //Floor speed to nearest multiple of 5
@@ -63,8 +69,8 @@ private val locationObserver = object : LocationObserver {
         val timeChange = currentTime - locationLastUpdate
         //Get change in speed from current to last reading
         val speedChange = currentSpeed - lastSpeed
-        //Calculate acceleration based on change in speed over change in time
-        val calcAcceleration = speedChange/timeChange
+        //Calculate acceleration based on change in speed over change in time in seconds
+        val calcAcceleration = speedChange/(timeChange/1000)
 
         //If the accelerometer has spiked with an acceleration above 8 MPH/s
         if (accSpike) {
@@ -82,11 +88,11 @@ private val locationObserver = object : LocationObserver {
             accSpike = false
         }
 
-        //If calculated Acceleration is less than -8 MPH/s a hard stop has occurred
-        if (calcAcceleration <= -8) {
+        //If calculated Acceleration is less than -7 MPH/s a hard stop has occurred
+        if (calcAcceleration <= -7) {
             hardStops++
-        //If calculated acceleration is greater than 8 MPH/s a rapid acceleration has occurred
-        } else if (calcAcceleration >= 8) {
+        //If calculated acceleration is greater than 7 MPH/s a rapid acceleration has occurred
+        } else if (calcAcceleration >= 7) {
             rapidAcc++
         }
 
@@ -94,7 +100,6 @@ private val locationObserver = object : LocationObserver {
         if (currentSpeed > speedingLimit) {
             //Add time between checks of speed to speeding timer
             timeSpeeding += timeChange
-
         }
 
         //If rounded speed is above previous max speed
@@ -118,7 +123,7 @@ private val locationObserver = object : LocationObserver {
             speedLimDisp.text = "Not found"
         }
 
-        currSpeedDisp.text = "$currentSpeed mph"
+        currSpeedDisp.text = "${currentSpeed.roundToInt()} mph"
         if (currentSpeed > speedingLimit) {
             currSpeedDisp.setTextColor(Color.parseColor("#FF0000"))
         } else {
@@ -279,8 +284,10 @@ class MainActivity : AppCompatActivity() {
                 val y = values[1]
                 val z = values[2]
 
+                //Get total squared acceleration not including gravity in m/s^2
+                val accSqrd = (x*x+y*y+z*z)/(SensorManager.GRAVITY_EARTH*SensorManager.GRAVITY_EARTH)
                 //Get total acceleration not including gravity in m/s^2
-                val accSqrt = (x * x + y * y + z * z) / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH)
+                val accSqrt = sqrt(accSqrd)
                 //Get total acceleration not including gravity in MPH/s
                 val accMph = accSqrt*2.23694
                 //Get current system time
@@ -297,7 +304,7 @@ class MainActivity : AppCompatActivity() {
                 if speed has increased or decreased by at least 7 MPH. This will help compensate
                 for any accidental shifts in acceleration like the phone moving within the vehicle
                 or the phone being dropped while the car is in motion */
-                if (accMph >= 8) {
+                if (accSqrt > 2.68) {
                     accSpike = true
                 }
             }
