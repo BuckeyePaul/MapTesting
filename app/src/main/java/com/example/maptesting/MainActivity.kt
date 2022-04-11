@@ -140,8 +140,16 @@ private val locationObserver = object : LocationObserver {
             //Set the color of the speed to black
             currSpeedDisp.setTextColor(Color.parseColor("#000000"))
         }
-
-        speedingDisp.text = timeSpeeding.toString()
+        val timeSpeedSec = String.format("%02f", timeSpeeding%1000)
+        val timeSpeedMin = String.format("%02f", timeSpeeding%(60*1000))
+        //If time speeding is greater than an hour
+        if (timeSpeeding > 60*60*1000) {
+            //Display time speeding in hours, minutes, and seconds
+            speedingDisp.text = "${timeSpeeding % (60*60*1000)}:${timeSpeedMin}:${timeSpeedSec}"
+        } else {
+            //Display time speeding in minutes and seconds
+            speedingDisp.text = "${timeSpeedSec}:${timeSpeedSec}"
+        }
         stopDisp.text = hardStops.toString()
         accelDisp.text = rapidAcc.toString()
 
@@ -357,7 +365,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         stopButton.setOnClickListener(View.OnClickListener {
-            val alertDialog: AlertDialog? = this?.let {
+            val alertDialog: AlertDialog = this.let {
                 val builder = AlertDialog.Builder(it)
                 builder.apply {
                     setTitle(R.string.confirmation)
