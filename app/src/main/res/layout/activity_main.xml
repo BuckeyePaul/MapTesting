@@ -148,14 +148,15 @@
 
     <ImageButton
         android:id="@+id/scoreButton"
-        android:contentDescription="Score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
+        android:contentDescription="Score"
         android:minHeight="48dp"
         app:layout_constraintStart_toEndOf="@+id/homeButton"
         app:layout_constraintTop_toTopOf="@+id/homeButton"
-        app:srcCompat="@drawable/ic_baseline_check_box_24" />
+        app:srcCompat="@drawable/ic_baseline_check_box_24"
+        tools:ignore="ImageContrastCheck" />
 
     <ImageButton
         android:id="@+id/startButton"
@@ -176,7 +177,8 @@
         app:layout_constraintBottom_toTopOf="@+id/imageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/ic_media_pause" />
+        app:srcCompat="@android:drawable/ic_media_pause"
+        tools:ignore="ImageContrastCheck" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

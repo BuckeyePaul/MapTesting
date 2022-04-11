@@ -1,6 +1,18 @@
 <resources>
     <string name="app_name">MapTesting</string>
     <string name="mapbox_access_token">pk.eyJ1IjoiYnVja2V5ZXBhdWwiLCJhIjoiY2t6enk3cmdpMGV4ODNrcWhkNTBqdzZhcCJ9.cJyenZEWPhg7OA0Sn0wjqg</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="speedLimit">Speed Limit: </string>
+    <string name="currentSpeed">Current Speed: </string>
+    <string name="waiting">Waiting to start</string>
+    <string name="timeSpeeding">Time Speeding: </string>
+    <string name="hardStops">Hard Stops: </string>
+    <string name="rapidAcc">Rapid Accelerations: </string>
+    <string name="home">Home</string>
+    <string name="reports">Reports</string>
+    <string name="score">Score</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="ok">Yes</string>
+    <string name="cancel">No</string>
+    <string name="confirmation">Are you sure you want to stop this driving session?</string>
 </resources>

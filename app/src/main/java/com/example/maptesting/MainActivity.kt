@@ -2,6 +2,7 @@ package com.example.maptesting
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.hardware.Sensor
@@ -15,6 +16,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -25,6 +27,7 @@ import com.mapbox.navigation.core.trip.session.LocationMatcherResult
 import com.mapbox.navigation.core.trip.session.LocationObserver
 import kotlin.math.floor
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 import kotlin.math.sqrt
 
 /**
@@ -70,7 +73,7 @@ private val locationObserver = object : LocationObserver {
         //Get change in speed from current to last reading
         val speedChange = currentSpeed - lastSpeed
         //Calculate acceleration based on change in speed over change in time in seconds
-        val calcAcceleration = speedChange/(timeChange/1000)
+        val calcAcceleration = speedChange/timeChange * 1000
 
         //If the accelerometer has spiked with an acceleration above 8 MPH/s
         if (accSpike) {
@@ -114,19 +117,27 @@ private val locationObserver = object : LocationObserver {
         }
 
         //Set text view with information for debugging
-        textView.text = speedLimitMPH.toString() + "\n" + currentSpeed.toString() + "\n" +
-                (currentTime - locationLastUpdate).toString() + "\n"
+        textView.text = "CA: " + calcAcceleration.toString() + "\n" +
+                "SC: " + speedChange.toString() + "\n" +
+                "TC: " + timeChange.toString() + "\n"
 
+        //If there is a speed limit found
         if(speedLimitMPH > 5) {
+            //Display the speed limit
             speedLimDisp.text = "$speedLimitMPH mph"
         } else {
+            //Display not found
             speedLimDisp.text = "Not found"
         }
 
-        currSpeedDisp.text = "${currentSpeed.roundToInt()} mph"
+        //Display the current speed of the vehicle rounded to a whole number
+        currSpeedDisp.text = "${currentSpeed.roundToLong()} mph"
+        //If the current speed is over 5mph over the speed limit
         if (currentSpeed > speedingLimit) {
+            //Set the color of the speed to red
             currSpeedDisp.setTextColor(Color.parseColor("#FF0000"))
         } else {
+            //Set the color of the speed to black
             currSpeedDisp.setTextColor(Color.parseColor("#000000"))
         }
 
@@ -225,11 +236,13 @@ class MainActivity : AppCompatActivity() {
         reportsButton = findViewById(R.id.reportsButton)
         scoreButton = findViewById(R.id.scoreButton)
 
+        //Start and stop buttons with stop being invisible to start
         startButton = findViewById(R.id.startButton)
         stopButton = findViewById(R.id.stopButton)
         stopButton.visibility = View.GONE
         stopButton.isEnabled = false
 
+        //Debugging Text Boxes
         textView = findViewById(R.id.testText)
         accText = findViewById(R.id.accText)
 
@@ -293,7 +306,7 @@ class MainActivity : AppCompatActivity() {
                 //Get current system time
                 val currentTime = System.currentTimeMillis()
                 //Check that at least 200 ms have passed between checks
-                if (currentTime - accLastUpdate < 250) {
+                if (currentTime - accLastUpdate < 100) {
                     return
                 }
                 //Update TextView with acceleration and time difference for debugging
@@ -301,7 +314,7 @@ class MainActivity : AppCompatActivity() {
                 //Update last update time to current time
                 accLastUpdate = currentTime
                 /*If acceleration not including gravity is greater than 8 MPH/s throw flag to check
-                if speed has increased or decreased by at least 7 MPH. This will help compensate
+                if speed has increased or decreased by at least 4 MPH. This will help compensate
                 for any accidental shifts in acceleration like the phone moving within the vehicle
                 or the phone being dropped while the car is in motion */
                 if (accSqrt > 2.68) {
@@ -344,18 +357,36 @@ class MainActivity : AppCompatActivity() {
         })
 
         stopButton.setOnClickListener(View.OnClickListener {
-            // Stop recording location updates
-            mapboxNavigation.stopTripSession()
+            val alertDialog: AlertDialog? = this?.let {
+                val builder = AlertDialog.Builder(it)
+                builder.apply {
+                    setTitle(R.string.confirmation)
+                    setPositiveButton(R.string.ok,
+                        DialogInterface.OnClickListener { _, _ ->
+                            // User clicked OK button
+                            // Stop recording location updates
+                            mapboxNavigation.stopTripSession()
 
-            // Change button visibility
-            stopButton.visibility = View.GONE
-            stopButton.isEnabled = false
+                            // Change button visibility
+                            stopButton.visibility = View.GONE
+                            stopButton.isEnabled = false
 
-            startButton.visibility = View.VISIBLE
-            startButton.isEnabled = true
+                            startButton.visibility = View.VISIBLE
+                            startButton.isEnabled = true
 
-            reportsButton.isEnabled = true
-            reportsButton.isEnabled = true
+                            reportsButton.isEnabled = true
+                            reportsButton.isEnabled = true
+                        })
+                    setNegativeButton(R.string.cancel,
+                        DialogInterface.OnClickListener { _, _ ->
+                            // User cancelled the dialog
+                            return@OnClickListener
+                        })
+                    show()
+                }
+                // Create the AlertDialog
+                builder.create()
+            }
 
             // Revert Displays
 //        speedLimDisp.text = "Waiting to start"
