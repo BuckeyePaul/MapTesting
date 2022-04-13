@@ -3,6 +3,7 @@ package com.example.maptesting
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.hardware.Sensor
@@ -403,6 +404,11 @@ class MainActivity : AppCompatActivity() {
 //        stopDisp.text = "Waiting to start"
 //        accelDisp.text = "Waiting to start"
 
+        })
+
+        reportsButton.setOnClickListener(View.OnClickListener {
+            val reports = Intent(this, Reports::class.java)
+            startActivity(reports);
         })
     }
 
