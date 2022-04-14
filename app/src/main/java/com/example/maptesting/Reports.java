@@ -18,12 +18,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class Reports extends AppCompatActivity {
 
-    ListView lv;
-    File[] reportFiles;
-    String[] reportNames;
+    private ListView lv;
+    private File[] reportFiles;
+    private ArrayList<String> reportNamesList = new ArrayList<String>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,27 +56,27 @@ public class Reports extends AppCompatActivity {
 
         // Populate list view with text files in local storage
         reportFiles = this.getFilesDir().listFiles();
-        reportNames = new String[this.getFilesDir().listFiles().length - 2];
 
         int index = 0;
         for(File report : reportFiles) {
-            Log.d("FILENAME", report.toString());
+            Log.d("FILENAME", report.getName());
             // Filter out mapbox files from reports list
-            if(!report.toString().contains(".mapbox") && !report.toString().contains("mbx_nav")) {
-                reportNames[index] = report.getName();
+            if(!report.getName().contains(".mapbox") && !report.getName().contains("mbx_nav")) {
+                reportNamesList.add(report.getName());
                 index++;
             }
         }
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_expandable_list_item_1, reportNames);
+        Collections.sort(reportNamesList, String.CASE_INSENSITIVE_ORDER);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_expandable_list_item_1, reportNamesList);
         lv.setAdapter(arrayAdapter);
 
         // Show report contents when clicked
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> l, View v, int pos, long id) {
-                Log.i("FileList", reportFiles[pos].toString() + " was clicked");
+                Log.i("FileList", reportNamesList.get(pos) + " was clicked");
                 // Show contents of the file on the screen
                 try {
-                    FileInputStream fis = openFileInput(reportFiles[pos].getName());
+                    FileInputStream fis = openFileInput(reportNamesList.get(pos));
                     InputStreamReader InputRead = new InputStreamReader(fis);
 
                     // Read report contents 10 characters at a time
@@ -89,7 +93,7 @@ public class Reports extends AppCompatActivity {
 
                     // Pass relevant data to activity where report contents are shown
                     Intent viewContent = new Intent(Reports.this, ReportContent.class);
-                    viewContent.putExtra("reportName", reportFiles[pos].getName());
+                    viewContent.putExtra("reportName", reportNamesList.get(pos));
                     viewContent.putExtra("reportContents", reportData);
                     startActivity(viewContent);
 

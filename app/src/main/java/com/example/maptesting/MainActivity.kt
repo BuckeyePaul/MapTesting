@@ -13,6 +13,7 @@ import android.hardware.SensorManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -26,6 +27,14 @@ import com.mapbox.navigation.core.MapboxNavigation
 import com.mapbox.navigation.core.MapboxNavigationProvider
 import com.mapbox.navigation.core.trip.session.LocationMatcherResult
 import com.mapbox.navigation.core.trip.session.LocationObserver
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.io.InputStreamReader
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.temporal.TemporalAdjusters
+import java.util.*
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
@@ -223,6 +232,14 @@ private var timeSpeeding: Long = 0
 private var maxSpeed: Int = 0
 private var maxSpeedTime: Long = 0
 
+// Variables for determining start and end time of trip
+private var startTime: Long = 0
+private var stopTime: Long = 0
+
+//
+@RequiresApi(Build.VERSION_CODES.O)
+private val weekOf: LocalDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+
 class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -363,6 +380,8 @@ class MainActivity : AppCompatActivity() {
 
             reportsButton.isEnabled = false
             scoreButton.isEnabled = false
+
+            startTime = System.currentTimeMillis();
         })
 
         stopButton.setOnClickListener(View.OnClickListener {
@@ -385,6 +404,122 @@ class MainActivity : AppCompatActivity() {
 
                             reportsButton.isEnabled = true
                             reportsButton.isEnabled = true
+
+                            stopTime = System.currentTimeMillis()
+
+                            // Total time spent driving in ms
+                            var totalTimeMills = stopTime - startTime
+
+                            // Save data to internal storage
+
+                            // File for report naming and path
+                            var fileName: String = "$weekOf"
+                            var file: File = File(applicationContext.filesDir, fileName)
+                            var fileData: String
+
+                            // File report does exist => need to update cumulative data
+                            if(file.exists()) {
+                                Log.d("FILE", "FILE FOUND")
+                                // Variables that will have previous data added to them to become new stored parameter
+                                var updatedTotalTimeMills: Long = totalTimeMills
+                                var updatedTimeSpeeding: Long = timeSpeeding
+                                var updatedHardStops: Int = hardStops
+                                var updatedRapidAcc: Int = rapidAcc
+                                var updatedMaxSpeed: Int = maxSpeed
+                                var currFileData: String = ""
+
+                                // Read the existing file
+                                try {
+                                    val fis = openFileInput(file.name)
+                                    val InputRead = InputStreamReader(fis)
+
+                                    // Read report contents 10 characters at a time
+                                    val inputBuffer = CharArray(50)
+                                    var charRead: Int
+                                    while (InputRead.read(inputBuffer).also { charRead = it } > 0) {
+                                        val readString = String(inputBuffer, 0, charRead)
+                                        currFileData += readString
+                                    }
+
+                                    // Close input stream
+                                    InputRead.close()
+
+                                } catch (e: FileNotFoundException) {
+                                    e.printStackTrace()
+                                } catch (e: IOException) {
+                                    e.printStackTrace()
+                                }
+
+                                // Parse old file line by line and generate updated values
+                                var lineNum: Int = 0
+                                val scanner = Scanner(currFileData)
+                                while (scanner.hasNextLine()) {
+                                    val line: String = scanner.nextLine()
+                                    if(lineNum == 1) {
+                                        Log.d("EXISTING FILE DATA", "OLD TIME DRIVING WAS $line")
+                                        // Convert line to long
+                                        var oldTime: Long? = line.toLong()
+                                        if (oldTime != null) {
+                                            updatedTotalTimeMills += oldTime
+                                        }
+                                    } else if(lineNum == 4){
+                                        Log.d("EXISTING FILE DATA", "OLD TIME SPEEDING WAS $line")
+                                        // Convert line to long
+                                        var oldTimeSpeeding: Long? = line.toLong()
+                                        if (oldTimeSpeeding != null) {
+                                            updatedTimeSpeeding += oldTimeSpeeding
+                                        }
+                                    } else if(lineNum == 7) {
+                                        Log.d("EXISTING FILE DATA", "OLD HARD STOPS WAS $line")
+                                        // Convert line to int
+                                        var oldHardStop: Int? = line.toInt()
+                                        if (oldHardStop != null) {
+                                            updatedHardStops += oldHardStop
+                                        }
+                                    } else if (lineNum == 10) {
+                                        Log.d("EXISTING FILE DATA", "OLD RAPID ACC WAS $line")
+                                        // Convert line to int
+                                        var oldRapidAcc: Int? = line.toInt()
+                                        if (oldRapidAcc != null) {
+                                            updatedRapidAcc += oldRapidAcc
+                                        }
+                                    } else if (lineNum == 13) {
+                                        Log.d("EXISTING FILE DATA", "OLD MAX SPEED WAS $line")
+                                        // Convert line to int
+                                        var oldMaxSpeed: Int? = line.toInt()
+                                        if(oldMaxSpeed!! > maxSpeed) {
+                                            updatedMaxSpeed = oldMaxSpeed
+                                        }
+                                    }
+                                    lineNum++
+                                }
+                                scanner.close()
+
+                                // Set new file data
+                                fileData =
+                                    "Total time driving:\n$updatedTotalTimeMills\n\nTotal time speeding:\n$updatedTimeSpeeding\n\nHard stops:\n$updatedHardStops\n\nRapid accelerations:\n$updatedRapidAcc\n\nTop speed:\n$updatedMaxSpeed"
+
+                            } else {
+                                // File for report does not exist => write data from this session directly
+                                Log.d("FILE", "FILE NOT FOUND")
+                                // Write tracked parameters to file
+                                fileData =
+                                    "Total time driving:\n$totalTimeMills\n\nTotal time speeding:\n$timeSpeeding\n\nHard stops:\n$hardStops\n\nRapid accelerations:\n$rapidAcc\n\nTop speed:\n$maxSpeed"
+                            }
+
+                            // Write file data
+                            try {
+                                val fos = openFileOutput(file.name, MODE_PRIVATE)
+                                fos.write(fileData.toByteArray())
+                                fos.close()
+                            } catch (e: FileNotFoundException) {
+                                e.printStackTrace()
+                            } catch (e: IOException) {
+                                e.printStackTrace()
+                            }
+
+                            // File for report does exist
+                            // Have to read each line and edit the values. Then rewrite the file (copy/paste from above)
                         })
                     setNegativeButton(R.string.cancel,
                         DialogInterface.OnClickListener { _, _ ->
