@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 
 public class Reports extends AppCompatActivity {
 
@@ -67,6 +68,7 @@ public class Reports extends AppCompatActivity {
             }
         }
         Collections.sort(reportNamesList, String.CASE_INSENSITIVE_ORDER);
+        Collections.reverse(reportNamesList);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_expandable_list_item_1, reportNamesList);
         lv.setAdapter(arrayAdapter);
 

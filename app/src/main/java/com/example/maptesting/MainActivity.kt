@@ -12,6 +12,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.location.Location
 import android.os.Build
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -237,12 +238,12 @@ private var startTime: Long = 0
 private var stopTime: Long = 0
 
 //
-@RequiresApi(Build.VERSION_CODES.O)
+@RequiresApi(VERSION_CODES.O)
 private val weekOf: LocalDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
 
 class MainActivity : AppCompatActivity() {
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -352,7 +353,7 @@ class MainActivity : AppCompatActivity() {
         override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(VERSION_CODES.M)
     private fun implementListeners() {
         startButton.setOnClickListener(View.OnClickListener {
             if (ActivityCompat.checkSelfPermission(
@@ -443,6 +444,7 @@ class MainActivity : AppCompatActivity() {
 
                                     // Close input stream
                                     InputRead.close()
+                                    fis.close()
 
                                 } catch (e: FileNotFoundException) {
                                     e.printStackTrace()
