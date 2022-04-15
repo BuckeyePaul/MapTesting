@@ -194,8 +194,6 @@ private lateinit var stopDisp: TextView
 @SuppressLint("StaticFieldLeak")
 private lateinit var accelDisp: TextView
 @SuppressLint("StaticFieldLeak")
-private lateinit var homeButton: ImageButton
-@SuppressLint("StaticFieldLeak")
 private lateinit var reportsButton: ImageButton
 @SuppressLint("StaticFieldLeak")
 private lateinit var scoreButton: ImageButton
@@ -261,7 +259,6 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        homeButton = findViewById(R.id.homeButton)
         reportsButton = findViewById(R.id.reportsButton)
         scoreButton = findViewById(R.id.scoreButton)
 
