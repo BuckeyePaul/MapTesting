@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/ECE5466/MapTesting/app/src/main/res/layout/activity_main.xml" value="0.5" />
+        <entry key="..\:/ECE5466/MapTesting/app/src/main/res/layout/fragment_home_screen.xml" value="0.3109375" />
+        <entry key="..\:/ECE5466/MapTesting/app/src/main/res/layout/fragment_reports_screen.xml" value="0.3109375" />
+        <entry key="..\:/ECE5466/MapTesting/app/src/main/res/layout/fragment_score_screen.xml" value="0.3109375" />
+        <entry key="..\:/Users/Administrator/Desktop/ECE5466/MapTesting-ui-basic/app/src/main/res/layout/activity_main.xml" value="0.4041666666666667" />
+        <entry key="..\:/Users/Administrator/Desktop/ECE5466/MapTesting-ui-basic/app/src/main/res/layout/activity_report_content.xml" value="0.4041666666666667" />
+        <entry key="..\:/Users/Administrator/Desktop/ECE5466/MapTesting-ui-basic/app/src/main/res/layout/activity_reports.xml" value="0.4041666666666667" />
+        <entry key="..\:/Users/Administrator/Desktop/ECE5466/MapTesting-ui-basic/app/src/main/res/layout/activity_score.xml" value="0.2140625" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.4415" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/drawable/ic_baseline_menu_24.xml" value="0.4415" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/layout/activity_main.xml" value="0.5541666666666667" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/layout/activity_report_content.xml" value="0.2857142857142857" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/layout/activity_reports.xml" value="0.4375" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/layout/fragment_home_screen.xml" value="0.31354166666666666" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/layout/fragment_reports_screen.xml" value="0.3828571428571429" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/layout/home_screen.xml" value="0.40806159420289856" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/layout/nav_header.xml" value="0.42857142857142855" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/layout/report_contents.xml" value="0.42857142857142855" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/menu/menu.xml" value="0.5255208333333333" />
+        <entry key="..\:/Users/adsch/AndroidStudioProjects/MapTesting/app/src/main/res/menu/nav_menu.xml" value="0.5255208333333333" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
