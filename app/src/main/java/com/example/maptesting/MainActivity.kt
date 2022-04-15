@@ -36,10 +36,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
 import java.util.*
-import kotlin.math.floor
-import kotlin.math.roundToInt
-import kotlin.math.roundToLong
-import kotlin.math.sqrt
+import kotlin.math.*
 
 /**
  * Mapbox Navigation entry point. There should only be one instance of this object for the app.
@@ -239,9 +236,9 @@ private var stopTime: Long = 0
 
 // Variables for user scores
 private var totScore: Double = 0.0
-private var braScore: Int = 0
-private var accScore: Int = 0
-private var spdScore: Long = 0
+private var braScore: Double = 0.0
+private var accScore: Double = 0.0
+private var spdScore: Double = 0.0
 
 @RequiresApi(VERSION_CODES.O)
 private val weekOf: LocalDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
@@ -414,13 +411,13 @@ class MainActivity : AppCompatActivity() {
                             stopTime = System.currentTimeMillis()
 
                             // Total time spent driving in ms
-                            var totalTimeMills = stopTime - startTime
+                            val totalTimeMills: Long = stopTime - startTime
 
                             // Save data to internal storage
 
                             // File for report naming and path
-                            var fileName: String = "$weekOf"
-                            var file: File = File(applicationContext.filesDir, fileName)
+                            val fileName: String = "$weekOf"
+                            val file: File = File(applicationContext.filesDir, fileName)
                             var fileData: String
 
                             // File report does exist => need to update cumulative data
@@ -434,9 +431,9 @@ class MainActivity : AppCompatActivity() {
                                 var updatedMaxSpeed: Int = maxSpeed
                                 var currFileData: String = ""
                                 var updatedtotScore: Double = totScore
-                                var updatedbraScore: Int = braScore
-                                var updatedaccScore: Int = accScore
-                                var updatedspdScore: Long = spdScore
+                                var updatedbraScore: Double = braScore
+                                var updatedaccScore: Double = accScore
+                                var updatedspdScore: Double = spdScore
 
                                 // Read the existing file
                                 try {
@@ -469,102 +466,103 @@ class MainActivity : AppCompatActivity() {
                                     if(lineNum == 1) {
                                         Log.d("EXISTING FILE DATA", "OLD TIME DRIVING WAS $line")
                                         // Convert line to long
-                                        var oldTime: Long? = line.toLong()
+                                        val oldTime: Long? = line.toLong()
                                         if (oldTime != null) {
                                             updatedTotalTimeMills += oldTime
                                         }
                                     } else if(lineNum == 4){
                                         Log.d("EXISTING FILE DATA", "OLD TIME SPEEDING WAS $line")
                                         // Convert line to long
-                                        var oldTimeSpeeding: Long? = line.toLong()
+                                        val oldTimeSpeeding: Long? = line.toLong()
                                         if (oldTimeSpeeding != null) {
                                             updatedTimeSpeeding += oldTimeSpeeding
                                         }
                                     } else if(lineNum == 7) {
                                         Log.d("EXISTING FILE DATA", "OLD HARD STOPS WAS $line")
                                         // Convert line to int
-                                        var oldHardStop: Int? = line.toInt()
+                                        val oldHardStop: Int? = line.toInt()
                                         if (oldHardStop != null) {
                                             updatedHardStops += oldHardStop
                                         }
                                     } else if (lineNum == 10) {
                                         Log.d("EXISTING FILE DATA", "OLD RAPID ACC WAS $line")
                                         // Convert line to int
-                                        var oldRapidAcc: Int? = line.toInt()
+                                        val oldRapidAcc: Int? = line.toInt()
                                         if (oldRapidAcc != null) {
                                             updatedRapidAcc += oldRapidAcc
                                         }
                                     } else if (lineNum == 13) {
                                         Log.d("EXISTING FILE DATA", "OLD MAX SPEED WAS $line")
                                         // Convert line to int
-                                        var oldMaxSpeed: Int? = line.toInt()
+                                        val oldMaxSpeed: Int? = line.toInt()
                                         if(oldMaxSpeed!! > maxSpeed) {
                                             updatedMaxSpeed = oldMaxSpeed
                                         }
                                     }
                                     lineNum++
-                                    // Calculate for updated scores
-                                    updatedbraScore = 100 - 10*updatedHardStops;
-                                    updatedaccScore = 100 - 10*updatedRapidAcc;
-                                    updatedspdScore = 100 - 10*updatedTimeSpeeding;
-                                    updatedtotScore = (updatedbraScore + updatedaccScore + updatedspdScore) / 3.0;
 
                                 }
                                 scanner.close()
 
+                                val hoursDriven: Double = totalTimeMills.toDouble() / 1000.0 / 60.0 / 60.0
+
+                                // Calculate for updated scores
+                                updatedbraScore = max(0.0, (100 - 10*updatedHardStops * updatedHardStops / hoursDriven))
+                                updatedaccScore = (max(0.0, 100 - 10*updatedRapidAcc * updatedRapidAcc / hoursDriven))
+                                updatedspdScore = min(100.0, max(0.toDouble(), (100 - (updatedTimeSpeeding / updatedTotalTimeMills - 0.09) - 20 * max(0,(updatedMaxSpeed - 75)/5))))
+                                updatedtotScore = (updatedbraScore + updatedaccScore + updatedspdScore) / 3.0
+
+                                fileData =
+                                    "Total time driving:\n$updatedTotalTimeMills\n\nTotal time speeding:\n$updatedTimeSpeeding\n\nHard stops:\n$updatedHardStops\n\nRapid accelerations:\n$updatedRapidAcc\n\nTop speed:\n$updatedMaxSpeed\n\nTotal Score:\n$updatedtotScore\n\nBraking Score:\n$updatedbraScore\n\nAcceleration Score:\n$updatedaccScore\n\nSpeeding Score:\n$updatedspdScore\n\n"
+
+                                if(updatedbraScore < 65 || updatedaccScore < 65 || updatedspdScore < 60 ) {
+                                    fileData += "Tips:\n"
+                                }
+
                                 // Give tips
-                                if (updatedaccScore < 60) {
-                                    fileData =
-                                        "Total time driving:\n$updatedTotalTimeMills\n\nTotal time speeding:\n$updatedTimeSpeeding\n\nHard stops:\n$updatedHardStops\n\nRapid accelerations:\n$updatedRapidAcc\n\nTop speed:\n$updatedMaxSpeed\n\nTotal score:\n$updatedtotScore\n\nHard brake scores:\n$updatedbraScore\n\nRapid acceleration score:\n$updatedaccScore\n\nSpeeding score:\n$updatedspdScore\n\nTip: Press your accelerator pedal ease and gentle."
+                                if (updatedaccScore < 65) {
+                                    fileData += "\nGradually accelerate your vehicle.\n"
                                 }
-                                if (updatedbraScore < 60) {
-                                    fileData =
-                                        "Total time driving:\n$updatedTotalTimeMills\n\nTotal time speeding:\n$updatedTimeSpeeding\n\nHard stops:\n$updatedHardStops\n\nRapid accelerations:\n$updatedRapidAcc\n\nTop speed:\n$updatedMaxSpeed\n\nTotal score:\n$updatedtotScore\n\nHard brake scores:\n$updatedbraScore\n\nRapid acceleration score:\n$updatedaccScore\n\nSpeeding score:\n$updatedspdScore\n\nTip1: Press your brake pedal ease and gentle.\n\nTip2: Keep a safe distance from the vehicle ahead."
+                                if (updatedbraScore < 65) {
+                                    fileData += "\nLeave a safe following distance.\nMore following distance should be given at higher speeds.\n"
+                                    fileData += "Begin breaking earlier for a more gradual stop.\n"
 
                                 }
-                                if (updatedspdScore < 60) {
-                                    fileData =
-                                        "Total time driving:\n$updatedTotalTimeMills\n\nTotal time speeding:\n$updatedTimeSpeeding\n\nHard stops:\n$updatedHardStops\n\nRapid accelerations:\n$updatedRapidAcc\n\nTop speed:\n$updatedMaxSpeed\n\nTotal score:\n$updatedtotScore\n\nHard brake scores:\n$updatedbraScore\n\nRapid acceleration score:\n$updatedaccScore\n\nSpeeding score:\n$updatedspdScore\n\nTip1: Speeding thrills but kills."
-
-                                }
-                                else {
-
-                                    // Set new file data
-                                    fileData =
-                                        "Total time driving:\n$updatedTotalTimeMills\n\nTotal time speeding:\n$updatedTimeSpeeding\n\nHard stops:\n$updatedHardStops\n\nRapid accelerations:\n$updatedRapidAcc\n\nTop speed:\n$updatedMaxSpeed\n\nTotal score:\n$updatedtotScore\n\nHard brake scores:\n$updatedbraScore\n\nRapid acceleration score:\n$updatedaccScore\n\nSpeeding score:\n$updatedspdScore"
+                                if (updatedspdScore < 65) {
+                                    fileData += "\nSpeeding thrills but kills.\n"
 
                                 }
                             } else {
                                 // File for report does not exist => write data from this session directly
                                 Log.d("FILE", "FILE NOT FOUND")
 
+                                val hoursDriven: Double = totalTimeMills.toDouble() / 1000.0 / 60.0 / 60.0
+
                                 // Calculate for scores
-                                braScore = 100 - 10 * hardStops;
-                                accScore = 100 - 10 * rapidAcc;
-                                spdScore = 100 - 10 * timeSpeeding;
-                                totScore = (braScore + accScore + spdScore) / 3.0;
+                                braScore = max(0.0, (100 - 10 * hardStops * hardStops / hoursDriven))
+                                accScore = max(0.0, (100 - 10 * rapidAcc * rapidAcc / hoursDriven))
+                                spdScore = min(100.0, max(0.toDouble(), (100 - (timeSpeeding / totalTimeMills - 0.09) - 20 * max(0,(maxSpeed - 75)/5))))
+                                totScore = (braScore + accScore + spdScore) / 3.0
 
+
+                                fileData =
+                                    "Total time driving:\n$totalTimeMills\n\nTotal time speeding:\n$timeSpeeding\n\nHard stops:\n$hardStops\n\nRapid accelerations:\n$rapidAcc\n\nTop speed:\n$maxSpeed\n\nTotal score:\n$totScore\n\nHard brake scores:\n$braScore\n\nRapid acceleration score:\n$accScore\n\nSpeeding score:\n$spdScore\n\n"
+
+                                if (braScore < 65 || accScore < 65 || spdScore < 65) {
+                                    fileData += "Tips:\n"
+                                }
                                 // Give tips
-                                if (accScore < 60) {
-                                    fileData =
-                                        "Total time driving:\n$totalTimeMills\n\nTotal time speeding:\n$timeSpeeding\n\nHard stops:\n$hardStops\n\nRapid accelerations:\n$rapidAcc\n\nTop speed:\n$maxSpeed\n\nTotal score:\n$totScore\n\nHard brake scores:\n$braScore\n\nRapid acceleration score:\n$accScore\n\nSpeeding score:\n$spdScore\n\nTip: Press your accelerator pedal ease and gentle."
+                                if (accScore < 65) {
+                                    fileData += "Gradually accelerate your vehicle\n"
                                 }
-
-                                if (braScore < 60) {
-                                    fileData =
-                                        "Total time driving:\n$totalTimeMills\n\nTotal time speeding:\n$timeSpeeding\n\nHard stops:\n$hardStops\n\nRapid accelerations:\n$rapidAcc\n\nTop speed:\n$maxSpeed\n\nTotal score:\n$totScore\n\nHard brake scores:\n$braScore\n\nRapid acceleration score:\n$accScore\n\nSpeeding score:\n$spdScore\n\nTip1: Press your brake pedal ease and gentle.\n\nTip2: Keep a safe distance from the vehicle ahead."
+                                if (braScore < 65) {
+                                    fileData += "Leave a safe following distance. More following distance should be given at higher speeds.\n"
+                                    fileData += "Begin breaking earlier for a more gradual stop\n"
 
                                 }
-                                if (spdScore < 60) {
-                                    fileData =
-                                        "Total time driving:\n$totalTimeMills\n\nTotal time speeding:\n$timeSpeeding\n\nHard stops:\n$hardStops\n\nRapid accelerations:\n$rapidAcc\n\nTop speed:\n$maxSpeed\n\nTotal score:\n$totScore\n\nHard brake scores:\n$braScore\n\nRapid acceleration score:\n$accScore\n\nSpeeding score:\n$spdScore\n\nTip1: Speeding thrills but kills."
+                                if (spdScore < 65) {
+                                    fileData += "Speeding thrills but kills"
 
-                                }
-
-                                // Write tracked parameters to file
-                                else {
-                                    fileData =
-                                        "Total time driving:\n$totalTimeMills\n\nTotal time speeding:\n$timeSpeeding\n\nHard stops:\n$hardStops\n\nRapid accelerations:\n$rapidAcc\n\nTop speed:\n$maxSpeed\n\nTotal score:\n$totScore\n\nHard brake scores:\n$braScore\n\nRapid acceleration score:\n$accScore\n\nSpeeding score:\n$spdScore"
                                 }
                             }
 
@@ -604,7 +602,7 @@ class MainActivity : AppCompatActivity() {
 
         reportsButton.setOnClickListener(View.OnClickListener {
             val reports = Intent(this, Reports::class.java)
-            startActivity(reports);
+            startActivity(reports)
         })
     }
 
