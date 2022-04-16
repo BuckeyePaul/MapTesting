@@ -403,7 +403,7 @@ class MainActivity : AppCompatActivity() {
                             startButton.isEnabled = true
 
                             reportsButton.isEnabled = true
-                            reportsButton.isEnabled = true
+                            scoreButton.isEnabled = true
 
                             stopTime = System.currentTimeMillis()
 
@@ -501,18 +501,20 @@ class MainActivity : AppCompatActivity() {
                                 }
                                 scanner.close()
 
-                                val hoursDriven: Double = totalTimeMills.toDouble() / 1000.0 / 60.0 / 60.0
+                                var hoursDriven: Double = totalTimeMills.toDouble() / 1000.0 / 60.0 / 60.0
+
+                                if(hoursDriven < 1)  hoursDriven = 1.0
 
                                 // Calculate for updated scores
                                 updatedbraScore = max(0.0, (100 - 10*updatedHardStops * updatedHardStops / hoursDriven))
                                 updatedaccScore = (max(0.0, 100 - 10*updatedRapidAcc * updatedRapidAcc / hoursDriven))
-                                updatedspdScore = min(100.0, max(0.toDouble(), (100 - (updatedTimeSpeeding / updatedTotalTimeMills - 0.09) - 20 * max(0,(updatedMaxSpeed - 75)/5))))
+                                updatedspdScore = min(100.0, max(0.toDouble(), (100 - (updatedTimeSpeeding.toDouble() / updatedTotalTimeMills.toDouble() - 0.09) - 20 * max(0,(updatedMaxSpeed - 70)/5))))
                                 updatedtotScore = (updatedbraScore + updatedaccScore + updatedspdScore) / 3.0
 
                                 fileData =
-                                    "Total time driving:\n$updatedTotalTimeMills\n\nTotal time speeding:\n$updatedTimeSpeeding\n\nHard stops:\n$updatedHardStops\n\nRapid accelerations:\n$updatedRapidAcc\n\nTop speed:\n$updatedMaxSpeed\n\nTotal Score:\n$updatedtotScore\n\nBraking Score:\n$updatedbraScore\n\nAcceleration Score:\n$updatedaccScore\n\nSpeeding Score:\n$updatedspdScore\n\n"
+                                    "Total time driving:\n$updatedTotalTimeMills\n\nTotal time speeding:\n$updatedTimeSpeeding\n\nHard stops:\n$updatedHardStops\n\nRapid accelerations:\n$updatedRapidAcc\n\nTop speed (mph):\n$updatedMaxSpeed\n\nTotal Score:\n$updatedtotScore\n\nBraking Score:\n$updatedbraScore\n\nAcceleration Score:\n$updatedaccScore\n\nSpeeding Score:\n$updatedspdScore\n\n"
 
-                                if(updatedbraScore < 65 || updatedaccScore < 65 || updatedspdScore < 60 ) {
+                                if(updatedbraScore < 65 || updatedaccScore < 65 || updatedspdScore < 65 ) {
                                     fileData += "Tips:\n"
                                 }
 
@@ -538,12 +540,12 @@ class MainActivity : AppCompatActivity() {
                                 // Calculate for scores
                                 braScore = max(0.0, (100 - 10 * hardStops * hardStops / hoursDriven))
                                 accScore = max(0.0, (100 - 10 * rapidAcc * rapidAcc / hoursDriven))
-                                spdScore = min(100.0, max(0.toDouble(), (100 - (timeSpeeding / totalTimeMills - 0.09) - 20 * max(0,(maxSpeed - 75)/5))))
+                                spdScore = min(100.0, max(0.toDouble(), (100 - (timeSpeeding.toDouble() / totalTimeMills.toDouble() - 0.09) - 20 * max(0,(maxSpeed - 70)/5))))
                                 totScore = (braScore + accScore + spdScore) / 3.0
 
 
                                 fileData =
-                                    "Total time driving:\n$totalTimeMills\n\nTotal time speeding:\n$timeSpeeding\n\nHard stops:\n$hardStops\n\nRapid accelerations:\n$rapidAcc\n\nTop speed:\n$maxSpeed\n\nTotal score:\n$totScore\n\nHard brake scores:\n$braScore\n\nRapid acceleration score:\n$accScore\n\nSpeeding score:\n$spdScore\n\n"
+                                    "Total time driving:\n$totalTimeMills\n\nTotal time speeding:\n$timeSpeeding\n\nHard stops:\n$hardStops\n\nRapid accelerations:\n$rapidAcc\n\nTop speed (mph):\n$maxSpeed\n\nTotal score:\n$totScore\n\nHard brake scores:\n$braScore\n\nRapid acceleration score:\n$accScore\n\nSpeeding score:\n$spdScore\n\n"
 
                                 if (braScore < 65 || accScore < 65 || spdScore < 65) {
                                     fileData += "Tips:\n"
@@ -600,6 +602,11 @@ class MainActivity : AppCompatActivity() {
         reportsButton.setOnClickListener(View.OnClickListener {
             val reports = Intent(this, Reports::class.java)
             startActivity(reports)
+        })
+
+        scoreButton.setOnClickListener(View.OnClickListener {
+            val score = Intent(this, OverallScore::class.java)
+            startActivity(score)
         })
     }
 

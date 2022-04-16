@@ -38,19 +38,6 @@ public class Reports extends AppCompatActivity {
         // Check where files will be stored
         Log.d("FILES", this.getFilesDir().toString());
 
-        //Put dummy files in storage for testing
-        int fileNum = 1;
-        String testData = "TEST DATA1";
-        try {
-            FileOutputStream fos = openFileOutput("test1.txt", MODE_PRIVATE);
-            fos.write(testData.getBytes());
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
 
         // List view containing all reports
         lv = (ListView) findViewById(R.id.reportsListView);
@@ -92,7 +79,7 @@ public class Reports extends AppCompatActivity {
 
                     // Close input stream
                     InputRead.close();
-
+                    fis.close();
                     // Pass relevant data to activity where report contents are shown
                     Intent viewContent = new Intent(Reports.this, ReportContent.class);
                     viewContent.putExtra("reportName", reportNamesList.get(pos));
