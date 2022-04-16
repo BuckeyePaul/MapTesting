@@ -508,7 +508,7 @@ class MainActivity : AppCompatActivity() {
                                 // Calculate for updated scores
                                 updatedbraScore = max(0.0, (100 - 10*updatedHardStops * updatedHardStops / hoursDriven))
                                 updatedaccScore = (max(0.0, 100 - 10*updatedRapidAcc * updatedRapidAcc / hoursDriven))
-                                updatedspdScore = min(100.0, max(0.toDouble(), (100 - 100 * ((updatedTimeSpeeding.toDouble() / updatedTotalTimeMills.toDouble() - 0.09)) - 20 * max(0,(updatedMaxSpeed - 75)/5))))
+                                updatedspdScore = min(100.0, max(0.toDouble(), (100 - 100 * (max((updatedTimeSpeeding.toDouble() / updatedTotalTimeMills.toDouble() - 0.05), 0.0)) - 20 * max(0,(updatedMaxSpeed - 70)/5))))
                                 updatedtotScore = (updatedbraScore + updatedaccScore + updatedspdScore) / 3.0
 
                                 fileData =
@@ -540,7 +540,7 @@ class MainActivity : AppCompatActivity() {
                                 // Calculate for scores
                                 braScore = max(0.0, (100 - 10 * hardStops * hardStops / hoursDriven))
                                 accScore = max(0.0, (100 - 10 * rapidAcc * rapidAcc / hoursDriven))
-                                spdScore = min(100.0, max(0.toDouble(), (100 - 100*((timeSpeeding.toDouble() / totalTimeMills.toDouble() - 0.09)) - 20 * max(0,(maxSpeed - 75)/5))))
+                                spdScore = min(100.0, max(0.toDouble(), (100 - 100*max((timeSpeeding.toDouble() / totalTimeMills.toDouble() - 0.05),0.0) - 20 * max(0,(maxSpeed - 70)/5))))
                                 totScore = (braScore + accScore + spdScore) / 3.0
 
 
