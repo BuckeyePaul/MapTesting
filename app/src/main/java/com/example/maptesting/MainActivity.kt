@@ -501,8 +501,10 @@ class MainActivity : AppCompatActivity() {
                                 }
                                 scanner.close()
 
+                                // Time driven in hours, used for scoring calculations
                                 var hoursDriven: Double = totalTimeMills.toDouble() / 1000.0 / 60.0 / 60.0
 
+                                // Prenvent divide by zero error
                                 if(hoursDriven < 1)  hoursDriven = 1.0
 
                                 // Calculate for updated scores
@@ -511,6 +513,7 @@ class MainActivity : AppCompatActivity() {
                                 updatedspdScore = min(100.0, max(0.toDouble(), (100 - 100 * (max((updatedTimeSpeeding.toDouble() / updatedTotalTimeMills.toDouble() - 0.05), 0.0)) - 20 * max(0,(updatedMaxSpeed - 70)/5))))
                                 updatedtotScore = (updatedbraScore + updatedaccScore + updatedspdScore) / 3.0
 
+                                // Text to be written to file
                                 fileData =
                                     "Total time driving:\n$updatedTotalTimeMills\n\nTotal time speeding:\n$updatedTimeSpeeding\n\nHard stops:\n$updatedHardStops\n\nRapid accelerations:\n$updatedRapidAcc\n\nTop speed (mph):\n$updatedMaxSpeed\n\nTotal Score:\n$updatedtotScore\n\nBraking Score:\n$updatedbraScore\n\nAcceleration Score:\n$updatedaccScore\n\nSpeeding Score:\n$updatedspdScore\n\n"
 
@@ -518,7 +521,7 @@ class MainActivity : AppCompatActivity() {
                                     fileData += "Tips:\n"
                                 }
 
-                                // Give tips
+                                // Give tips, if socres are within range
                                 if (updatedaccScore < 65) {
                                     fileData += "\nGradually accelerate your vehicle.\n"
                                 }
