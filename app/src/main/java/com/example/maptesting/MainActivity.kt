@@ -149,7 +149,7 @@ private val locationObserver = object : LocationObserver {
             currSpeedDisp.setTextColor(Color.parseColor("#000000"))
         }
         val timeSpeedSec = String.format("%02d", timeSpeeding%1000)
-        val timeSpeedMin = String.format("%02d", timeSpeeding%(60*1000))
+        val timeSpeedMin = String.format("%02d", timeSpeeding/(60*1000))
         //If time speeding is greater than an hour
         if (timeSpeeding > 60*60*1000) {
             //Display time speeding in hours, minutes, and seconds
