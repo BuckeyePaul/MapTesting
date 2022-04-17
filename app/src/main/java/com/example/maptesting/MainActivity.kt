@@ -537,8 +537,9 @@ class MainActivity : AppCompatActivity() {
                             } else {
                                 // File for report does not exist => write data from this session directly
                                 Log.d("FILE", "FILE NOT FOUND")
-
-                                val hoursDriven: Double = totalTimeMills.toDouble() / 1000.0 / 60.0 / 60.0
+                                hardStops += 1
+                                var hoursDriven: Double = totalTimeMills.toDouble() / 1000.0 / 60.0 / 60.0
+                                if(hoursDriven < 1) hoursDriven = 1.0
 
                                 // Calculate for scores
                                 braScore = max(0.0, (100 - 10 * hardStops * hardStops / hoursDriven))
@@ -558,12 +559,12 @@ class MainActivity : AppCompatActivity() {
                                     fileData += "Gradually accelerate your vehicle\n"
                                 }
                                 if (braScore < 65) {
-                                    fileData += "Leave a safe following distance. More following distance should be given at higher speeds.\n"
+                                    fileData += "\nLeave a safe following distance. More following distance should be given at higher speeds.\n"
                                     fileData += "Begin breaking earlier for a more gradual stop\n"
 
                                 }
                                 if (spdScore < 65) {
-                                    fileData += "Speeding thrills but kills"
+                                    fileData += "\nSpeeding thrills but kills\n"
 
                                 }
                             }
