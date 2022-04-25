@@ -90,17 +90,16 @@ private val locationObserver = object : LocationObserver {
             if (speedChange < -4) {
                 //If speed has reduced by at least 4 MPH then a hard stop has occurred
                 hardStops++
-            //Otherwise see if speed has increased by at least 4 MPH
+                //Otherwise see if speed has increased by at least 4 MPH
             } else if (speedChange > 4) {
                 //If speed has increased by at least 4 MPH then a rapid acceleration has occurred
                 rapidAcc++
             }
             //Set flag for accelerometer spiking to false
             accSpike = false
-        }
 
         //If calculated Acceleration is less than -7 MPH/s a hard stop has occurred
-        if (calcAcceleration <= -7) {
+        } else if (calcAcceleration <= -7) {
             hardStops++
         //If calculated acceleration is greater than 7 MPH/s a rapid acceleration has occurred
         } else if (calcAcceleration >= 7) {
