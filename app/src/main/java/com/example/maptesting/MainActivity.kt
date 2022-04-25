@@ -343,7 +343,7 @@ class MainActivity : AppCompatActivity() {
                 if speed has increased or decreased by at least 4 MPH. This will help compensate
                 for any accidental shifts in acceleration like the phone moving within the vehicle
                 or the phone being dropped while the car is in motion */
-                if (accSqrt > 2.68) {
+                if (accSqrt > 3.576) {
                     accSpike = true
                 }
             }
