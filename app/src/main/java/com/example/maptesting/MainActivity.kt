@@ -149,14 +149,14 @@ private val locationObserver = object : LocationObserver {
         }
         // Convert milliseconds to minutes and seconds for display
         val timeSpeedSec = String.format("%02d", (timeSpeeding/1000)%(60))
-        val timeSpeedMin = String.format("%02d", (timeSpeeding/1000)/60)
+        val timeSpeedMin = String.format("%02d", ((timeSpeeding/1000)/60)%60)
         //If time speeding is greater than an hour
         if (timeSpeeding > 60*60*1000) {
             //Display time speeding in hours, minutes, and seconds
             speedingDisp.text = "${timeSpeeding / (60*60*1000)}:${timeSpeedMin}:${timeSpeedSec}"
         } else {
             //Display time speeding in minutes and seconds
-            speedingDisp.text = "${timeSpeedSec}:${timeSpeedSec}"
+            speedingDisp.text = "${timeSpeedMin}:${timeSpeedSec}"
         }
         stopDisp.text = hardStops.toString()
         accelDisp.text = rapidAcc.toString()
