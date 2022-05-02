@@ -147,6 +147,7 @@ private val locationObserver = object : LocationObserver {
             //Set the color of the speed to black
             currSpeedDisp.setTextColor(Color.parseColor("#000000"))
         }
+        // Convert milliseconds to minutes and seconds for display
         val timeSpeedSec = String.format("%02d", (timeSpeeding/1000)%(60))
         val timeSpeedMin = String.format("%02d", (timeSpeeding/1000)/60)
         //If time speeding is greater than an hour
@@ -380,7 +381,7 @@ class MainActivity : AppCompatActivity() {
             reportsButton.isEnabled = false
             scoreButton.isEnabled = false
 
-            startTime = System.currentTimeMillis();
+            startTime = System.currentTimeMillis()
         })
 
         stopButton.setOnClickListener(View.OnClickListener {
