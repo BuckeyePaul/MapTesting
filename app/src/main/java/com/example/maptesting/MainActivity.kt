@@ -537,7 +537,6 @@ class MainActivity : AppCompatActivity() {
                             } else {
                                 // File for report does not exist => write data from this session directly
                                 Log.d("FILE", "FILE NOT FOUND")
-                                hardStops += 1
                                 var hoursDriven: Double = totalTimeMills.toDouble() / 1000.0 / 60.0 / 60.0
                                 if(hoursDriven < 1) hoursDriven = 1.0
 
