@@ -515,7 +515,7 @@ class MainActivity : AppCompatActivity() {
 
                                 // Text to be written to file
                                 fileData =
-                                    "Total time driving:\n$updatedTotalTimeMills\n\nTotal time speeding:\n$updatedTimeSpeeding\n\nHard stops:\n$updatedHardStops\n\nRapid accelerations:\n$updatedRapidAcc\n\nTop speed (mph):\n$updatedMaxSpeed\n\nTotal Score:\n$updatedtotScore\n\nBraking Score:\n$updatedbraScore\n\nAcceleration Score:\n$updatedaccScore\n\nSpeeding Score:\n$updatedspdScore\n\n"
+                                    "Total time driving (ms):\n$updatedTotalTimeMills\n\nTotal time speeding (ms):\n$updatedTimeSpeeding\n\nHard stops:\n$updatedHardStops\n\nRapid accelerations:\n$updatedRapidAcc\n\nTop speed (mph):\n$updatedMaxSpeed\n\nTotal Score:\n$updatedtotScore\n\nBraking Score:\n$updatedbraScore\n\nAcceleration Score:\n$updatedaccScore\n\nSpeeding Score:\n$updatedspdScore\n\n"
 
                                 if(updatedbraScore < 65 || updatedaccScore < 65 || updatedspdScore < 65 ) {
                                     fileData += "Tips:\n"
@@ -548,7 +548,7 @@ class MainActivity : AppCompatActivity() {
 
 
                                 fileData =
-                                    "Total time driving:\n$totalTimeMills\n\nTotal time speeding:\n$timeSpeeding\n\nHard stops:\n$hardStops\n\nRapid accelerations:\n$rapidAcc\n\nTop speed (mph):\n$maxSpeed\n\nTotal score:\n$totScore\n\nHard brake scores:\n$braScore\n\nRapid acceleration score:\n$accScore\n\nSpeeding score:\n$spdScore\n\n"
+                                    "Total time driving (ms):\n$totalTimeMills\n\nTotal time speeding (ms):\n$timeSpeeding\n\nHard stops:\n$hardStops\n\nRapid accelerations:\n$rapidAcc\n\nTop speed (mph):\n$maxSpeed\n\nTotal score:\n$totScore\n\nHard brake scores:\n$braScore\n\nRapid acceleration score:\n$accScore\n\nSpeeding score:\n$spdScore\n\n"
 
                                 if (braScore < 65 || accScore < 65 || spdScore < 65) {
                                     fileData += "Tips:\n"
